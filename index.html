@@ -409,15 +409,29 @@ function calcular(){
   SEGS.forEach(s=> wsum += s.off * (s.b - s.a));
   const corr = wsum / TOTAL_KM;
 
+  // tabla cada 5 km (integra los tramos de estrategia que caen en cada bloque)
+  function timeBetween(a,b){
+    let t = 0;
+    SEGS.forEach(s=>{
+      const lo = Math.max(a,s.a), hi = Math.min(b,s.b);
+      if (hi > lo) t += (hi-lo) * (avg + s.off - corr);
+    });
+    return t;
+  }
+  const blocks = [
+    [0, 5,  'Plano — controlar'],
+    [5, 10, 'Falso plano y LA SUBIDA'],
+    [10,15, 'Cima, bajada fuerte y repechos'],
+    [15,20, 'Bajada — se abre la llave'],
+    [20,TOTAL_KM, 'All out a la meta'],
+  ];
   let rows = '', cum = 0;
-  SEGS.forEach(s=>{
-    const pace = avg + s.off - corr;
-    const dur = pace * (s.b - s.a);
-    cum += dur;
-    rows += `<tr><td><b>${s.a}–${s.b===TOTAL_KM?'21.1':s.b}</b></td><td class="n">${s.nombre}</td><td>${fmtPace(pace)}/km</td><td>${fmtTime(cum)}</td></tr>`;
+  blocks.forEach(([a,b,n])=>{
+    const t = timeBetween(a,b); cum += t;
+    rows += `<tr><td><b>${a}–${b===TOTAL_KM?'21.1':b}</b></td><td class="n">${n}</td><td>${fmtPace(t/(b-a))}/km</td><td>${fmtTime(cum)}</td></tr>`;
   });
   out.innerHTML = `<div class="avg">Objetivo ${fmtTime(T)} → pace promedio <b>${fmtPace(avg)}/km</b></div>
-    <table><thead><tr><th>KM</th><th>Tramo</th><th>Ritmo</th><th>Reloj acumulado</th></tr></thead><tbody>${rows}</tbody></table>`;
+    <table><thead><tr><th>KM</th><th>Terreno</th><th>Ritmo medio</th><th>Reloj acumulado</th></tr></thead><tbody>${rows}</tbody></table>`;
   out.style.display='block';
 
   // actualizar ritmos en las cards de estrategia
