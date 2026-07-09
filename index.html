@@ -347,10 +347,10 @@ const SEGS = [
    txt:"Se empieza a inclinar sin que lo veas. Asienta tu ritmo por esfuerzo, no por reloj. Aquí cae tu gel pre-subida (~km 7).", off:5, destacado:false},
   {a:7.3, b:10.3, nombre:"LA SUBIDA — Lomas", perfil:"+120 m · tope en km 10.3",
    txt:"Aquí se decide la carrera — pero por no quemarse, no por atacar. Suelta el reloj: esfuerzo constante, pasos cortos, brazos. Vas a ir 20–30 seg más lento y ESTÁ BIEN. Todos suben lo mismo.", off:25, destacado:true},
-  {a:10.3,b:12.5, nombre:"El desquite — bajada al Bosque", perfil:"−75 m · bajada fuerte",
-   txt:"Bajada fuerte del km 10.3 al 11.7 y luego un respiro plano. Suelta las piernas sin frenar con los cuádriceps: pasos rápidos, no zancadas largas. Recupera el aliento y reengancha tu ritmo.", off:-15, destacado:false},
-  {a:12.5,b:15.5, nombre:"Bosque de Chapultepec — 2a sección", perfil:"Rolling · repecho en km 13.5",
-   txt:"Ojo aquí: baja al km 13.3 y de golpe viene un repecho de +25 m hacia el km 14, y otro diente antes del 15.3. No entres en pánico si el pace se cae en los repechos — cadencia corta, esfuerzo parejo, y de vuelta al ritmo en la parte alta.", off:2, destacado:false},
+  {a:10.3,b:13.3, nombre:"El desquite — bajada al Bosque", perfil:"−100 m · punto más bajo en km 13.3",
+   txt:"Bajada fuerte del 10.3 al 11.7, un respiro plano hasta el 12.5 y segunda bajada hasta el punto más bajo del Bosque (km 13.3). Suelta las piernas sin frenar con los cuádriceps: pasos rápidos, no zancadas largas. Recupera el aliento y reengancha tu ritmo.", off:-13, destacado:false},
+  {a:13.3,b:15.5, nombre:"Bosque de Chapultepec — 2a sección", perfil:"Repechos · +25 m al km 14",
+   txt:"Ojo aquí: saliendo de la bajada viene de golpe un repecho de +25 m hacia el km 14, y otro diente antes del 15.3. No entres en pánico si el pace se cae en los repechos — cadencia corta, esfuerzo parejo, y de vuelta al ritmo en la parte alta.", off:5, destacado:false},
   {a:15.5,b:19,   nombre:"Se abre la llave", perfil:"Bajada · −55 m",
    txt:"Del km 15.5 en adelante la ruta te empuja. Si hay piernas, baja 5–10 seg tu pace. Si prefieres controlar para cerrar con todo, también es válido. Empieza a rebasar gente: cada rebase es gasolina.", off:-8, destacado:false},
   {a:19,  b:TOTAL_KM, nombre:"MENTAL TOUGHNESS — Reforma a la meta", perfil:"Bajada · meta en el Ángel",
@@ -464,10 +464,16 @@ L.marker(ROUTE[ROUTE.length-1], {icon: divIcon('<div style="background:#fafafa;c
 });
 // punto más alto
 L.marker([19.40960,-99.22228], {icon: divIcon('<div style="font-size:18px;line-height:1;">▲</div>')}).addTo(map).bindPopup('<b>Punto más alto</b><br>km 10.3 — 2,387 msnm<br>De aquí en adelante, la ruta te debe a ti.');
-// marcadores cada 5 km
-[5,10,15,20].forEach(km=>{
-  L.marker(atKm(km), {icon: divIcon(`<div style="background:#fafafa;border:1.5px solid #111;color:#111;font:700 9px Space Mono,monospace;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;">${km}</div>`)}).addTo(map);
-});
+// marcadores de todos los km (1-20; múltiplos de 5 destacados = isotónico)
+for(let km=1; km<=20; km++){
+  const big = km % 5 === 0;
+  const css = big
+    ? "background:#111;border:1.5px solid #111;color:#fafafa;width:24px;height:24px;font:700 9px 'Space Mono',monospace;"
+    : "background:#fafafa;border:1px solid #111;color:#111;width:17px;height:17px;font:700 8px 'Space Mono',monospace;";
+  const size = big ? 24 : 17;
+  const mk = L.marker(atKm(km), {icon: L.divIcon({className:'', html:`<div style="${css}border-radius:50%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;">${km}</div>`, iconSize:[size,size], iconAnchor:[size/2,size/2]}), zIndexOffset: big ? 200 : 100}).addTo(map);
+  if (big) mk.bindPopup(`<b>Km ${km}</b> — abastecimiento de isotónico`);
+}
 
 }catch(e){
   const m = document.getElementById('map');
