@@ -150,6 +150,15 @@ footer p{font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.3e
     <div><span>Distancia</span>21,097.5 m</div>
     <div><span>Altitud</span>2,235 – 2,387 msnm</div>
   </div>
+  <div id="countdown" style="margin-top:52px;display:none;">
+    <div style="font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.25em;color:var(--gray);margin-bottom:14px;">Disparo de salida — Dom 12 · 6:10 AM</div>
+    <div style="display:flex;gap:clamp(18px,4vw,48px);align-items:baseline;">
+      <div><span id="cd-d" style="font-family:'Archivo';font-weight:900;font-size:clamp(38px,6vw,72px);letter-spacing:-0.02em;">–</span><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--gray);margin-left:6px;">días</span></div>
+      <div><span id="cd-h" style="font-family:'Archivo';font-weight:900;font-size:clamp(38px,6vw,72px);letter-spacing:-0.02em;">–</span><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--gray);margin-left:6px;">hrs</span></div>
+      <div><span id="cd-m" style="font-family:'Archivo';font-weight:900;font-size:clamp(38px,6vw,72px);letter-spacing:-0.02em;">–</span><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--gray);margin-left:6px;">min</span></div>
+      <div><span id="cd-s" style="font-family:'Archivo';font-weight:900;font-size:clamp(38px,6vw,72px);letter-spacing:-0.02em;">–</span><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--gray);margin-left:6px;">seg</span></div>
+    </div>
+  </div>
   <div class="lema">Una ruta · Una ciudad · Un solo equipo</div>
 </header>
 
@@ -542,6 +551,30 @@ document.querySelectorAll('#check-container input').forEach((cb,i)=>{
   try{ cb.checked = localStorage.getItem('dmnt21k_'+i)==='1'; }catch(e){}
   cb.addEventListener('change',()=>{ try{ localStorage.setItem('dmnt21k_'+i, cb.checked?'1':'0'); }catch(e){} });
 });
+
+// ═══════════ COUNTDOWN AL DISPARO — 12 jul 2026 6:10 AM CDMX (UTC-6) ═══════════
+(function(){
+  const target = Date.parse('2026-07-12T06:10:00-06:00');
+  const box = document.getElementById('countdown');
+  const el = {d:document.getElementById('cd-d'), h:document.getElementById('cd-h'), m:document.getElementById('cd-m'), s:document.getElementById('cd-s')};
+  function tick(){
+    let ms = target - Date.now();
+    if (ms <= 0){
+      box.innerHTML = '<div style="font-family:Archivo,sans-serif;font-weight:900;font-size:clamp(28px,4vw,48px);text-transform:uppercase;letter-spacing:-0.02em;">¡A romperla, Dementes! 🏁</div>';
+      box.style.display = 'block';
+      clearInterval(timer);
+      return;
+    }
+    const s = Math.floor(ms/1000);
+    el.d.textContent = Math.floor(s/86400);
+    el.h.textContent = String(Math.floor(s%86400/3600)).padStart(2,'0');
+    el.m.textContent = String(Math.floor(s%3600/60)).padStart(2,'0');
+    el.s.textContent = String(s%60).padStart(2,'0');
+    box.style.display = 'block';
+  }
+  tick();
+  const timer = setInterval(tick, 1000);
+})();
 
 // ═══════════ CLIMA EN VIVO — Open-Meteo ═══════════
 (async function(){
